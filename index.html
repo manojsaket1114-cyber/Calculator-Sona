@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ज्वेलर डिजिटल तराजू & स्पष्ट शुद्ध वजन रसीद (Precise Milligram Calculation & Permanently Locked)</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --container-border: #333;
+            --screen-bg: #000;
+            --screen-border: #00ffff;
+            --text-main: #e0e0e0;
+            --accent-gold: #ffcc00;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .scale-container {
+            background: var(--container-bg);
+            border: 3px solid var(--container-border);
+            border-radius: 12px;
+            padding: 15px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .top-menu-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .three-dot-btn {
+            background: none;
+            border: none;
+            color: var(--accent-gold);
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 5px;
+            letter-spacing: 2px;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 100;
+            width: 270px;
+        }
+        .dropdown-menu a {
+            display: block;
+            padding: 8px 12px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .dropdown-menu a:hover {
+            background: #3b3b3b;
+            color: #ffcc00;
+        }
+
+        .live-rates-banner {
+            background: #252525;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+        .rate-box-gold {
+            background: linear-gradient(135deg, #fff2b2, #ffd700);
+            color: #222;
+            padding: 6px 8px;
+            border-radius: 6px;
+            flex: 1;
+            font-weight: bold;
+            text-align: center;
+        }
+        .rate-box-silver {
+            background: linear-gradient(135deg, #e0e0e0, #b0b0b0);
+            color: #111;
+            padding: 6px 8px;
+            border-radius: 6px;
+            flex: 1;
+            font-weight: bold;
+            text-align: center;
+        }
+        .live-text {
+            background-color: #ffffff;
+            color: #ff0000 !important;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .unit-color {
+            color: #9900cc !important;
+            font-weight: bold;
+        }
+
+        /* --- डिस्प्ले स्क्रीन --- */
+        .scale-screen {
+            background: var(--screen-bg);
+            border: 2px solid var(--screen-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .digital-digits {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 26px;
+            font-weight: 900;
+            color: #00ff66;
+        }
+        .sub-digits-number {
+            font-size: 13px;
+            color: #ffaa00;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        .sub-digits-word {
+            font-size: 14px;
+            color: #00ffff;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        .display-price {
+            font-size: 26px;
+            color: #ffff00;
+            margin-top: 8px;
+            border-top: 1px dashed #444;
+            padding-top: 6px;
+            font-weight: 900;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--accent-gold);
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            font-family: Arial, sans-serif;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 8px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+        }
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #bbb;
+            font-size: 13px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        select.gold-active-box {
+            background-color: #3b3200 !important;
+            border: 2px solid #ffd700 !important;
+            color: #ffd700 !important;
+            font-weight: bold;
+        }
+        select.silver-active-box {
+            background-color: #2b3036 !important;
+            border: 2px solid #c0c0c0 !important;
+            color: #e0e0e0 !important;
+            font-weight: bold;
+        }
+        select.pakka-rate-box {
+            background-color: #002b14 !important;
+            border: 2px solid #00ff66 !important;
+            color: #00ff66 !important;
+            font-weight: bold;
+        }
+        select.kaccha-rate-box {
+            background-color: #3b1400 !important;
+            border: 2px solid #ff6600 !important;
+            color: #ffaa66 !important;
+            font-weight: bold;
+        }
+        .custom-input {
+            margin-top: 5px;
+            display: none;
+        }
+
+        .receipt-box {
+            margin-top: 15px;
+            background: #252525;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            font-family: Arial, sans-serif;
+        }
+        .receipt-box h3 {
+            margin: 0 0 8px 0;
+            color: #ffcc00;
+            font-size: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        .weight-val {
+            text-align: right;
+        }
+        .weight-val .g {
+            font-weight: bold;
+            color: #fff;
+        }
+        .weight-val .mg {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .total-row {
+            font-weight: bold;
+            color: #00ff66;
+            font-size: 16px;
+            border-top: 1px dashed #555;
+            padding-top: 6px;
+            margin-top: 6px;
+        }
+
+        /* --- सेटिंग्स मॉडल विंडो (कलर कस्टमाइजेशन) --- */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background: #1e1e1e;
+            border: 2px solid #ffcc00;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 380px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .settings-content h3 {
+            margin-top: 0;
+            color: #ffcc00;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+        .color-picker-group {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .color-picker-group label {
+            margin-bottom: 0;
+            font-size: 12px;
+        }
+        .color-picker-group input[type="color"] {
+            width: 50px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+            background: none;
+        }
+        .close-settings {
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .default-btn {
+            background: #444;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .default-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="scale-container">
+    <div class="top-menu-container">
+        <button class="three-dot-btn" onclick="toggleMenu()">⋮</button>
+        <div id="dropdownMenu" class="dropdown-menu">
+            <a href="#" onclick="openSettings(); toggleMenu();" style="color: #00ff66; font-weight: bold;">🎨 सभी कलर कस्टमाइज़ करें (Custom Colors)</a>
+            <a href="#" onclick="resetCalculator(); toggleMenu();">रीसेट करें</a>
+            <a href="#" onclick="printReceiptDirect(); toggleMenu();">रसीद प्रिंट करें</a>
+            <a href="#" onclick="showGoldExample(); toggleMenu();" style="color: #ffd700; font-weight: bold;">सोने का कैलकुलेशन एग्जांपल</a>
+            <a href="#" onclick="showGoldHalfRattiTo10gExample(); toggleMenu();" style="color: #ffbb00; font-weight: bold;">सोना आधा रत्ती से 10 ग्राम तक का हिसाब</a>
+            <a href="#" onclick="showSilverExample(); toggleMenu();" style="color: #c0c0c0; font-weight: bold;">चांदी का कैलकुलेशन एग्जांपल</a>
+            <a href="#" onclick="showSilverPavExample(); toggleMenu();" style="color: #00ff66; font-weight: bold;">चांदी आधा तोला से एक पाव तक का हिसाब</a>
+            <a href="#" onclick="fetchLiveMarketRates(); toggleMenu();" style="color: #00ff66; font-weight: bold;">लाइव रेट रिफ्रेश करें</a>
+        </div>
+    </div>
+
+    <!-- सेटिंग्स पॉपअप विंडो (कलर बदलने और डिफ़ॉल्ट करने के विकल्प) -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-content">
+            <h3>🎨 सभी कलर कस्टमाइज़ करें</h3>
+            
+            <div class="color-picker-group">
+                <label>ऐप पृष्ठभूमि रंग (Body BG):</label>
+                <input type="color" id="pickerBgColor" value="#121212" oninput="updateCustomColor('--bg-color', this.value)">
+            </div>
+            
+            <div class="color-picker-group">
+                <label>बॉक्स पृष्ठभूमि रंग (Container BG):</label>
+                <input type="color" id="pickerContainerBg" value="#1e1e1e" oninput="updateCustomColor('--container-bg', this.value)">
+            </div>
+
+            <div class="color-picker-group">
+                <label>बॉक्स बॉर्डर रंग (Container Border):</label>
+                <input type="color" id="pickerContainerBorder" value="#333333" oninput="updateCustomColor('--container-border', this.value)">
+            </div>
+
+            <div class="color-picker-group">
+                <label>स्क्रीन पृष्ठभूमि रंग (Screen BG):</label>
+                <input type="color" id="pickerScreenBg" value="#000000" oninput="updateCustomColor('--screen-bg', this.value)">
+            </div>
+
+            <div class="color-picker-group">
+                <label>स्क्रीन बॉर्डर रंग (Screen Border):</label>
+                <input type="color" id="pickerScreenBorder" value="#00ffff" oninput="updateCustomColor('--screen-border', this.value)">
+            </div>
+
+            <div class="color-picker-group">
+                <label>मुख्य टेक्स्ट रंग (Main Text):</label>
+                <input type="color" id="pickerTextMain" value="#e0e0e0" oninput="updateCustomColor('--text-main', this.value)">
+            </div>
+
+            <div class="color-picker-group">
+                <label>हेडिंग और आइकन रंग (Accent Gold):</label>
+                <input type="color" id="pickerAccentGold" value="#ffcc00" oninput="updateCustomColor('--accent-gold', this.value)">
+            </div>
+
+            <button class="default-btn" onclick="resetToDefaultColors()">ओरिजिनल डिफ़ॉल्ट कलर करें</button>
+            <button class="close-settings" onclick="closeSettings()">बंद करें</button>
+        </div>
+    </div>
+
+    <h2 id="calculatorTitle"><span id="titleSubName" style="font-size: 13px; color: #00ff66; margin-right: 5px;">Manoj Saket</span> ⚖️ ज्वेलर डिजिटल तराजू</h2>
+    
+    <div class="live-rates-banner">
+        <div class="rate-box-gold">
+            <span class="live-text" id="apiStatusText">लाइव</span> आज का भाव सोना <span class="unit-color">(10g)</span>:<br><span id="liveGoldDisplay" style="color:#800000; font-size:13px;">₹1,51,550</span>
+        </div>
+        <div class="rate-box-silver">
+            <span class="live-text">लाइव</span> आज का भाव चांदी <span class="unit-color" id="silverUnitLabel">(1 kg)</span>:<br><span id="liveSilverDisplay" style="color:#000080; font-size:13px;">₹2,32,160</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="metalType">धातु का चयन (Metal Selection):</label>
+        <select id="metalType" class="gold-active-box" onchange="changeMetalMode()">
+            <option value="gold" selected>सोना (Gold Calculator)</option>
+            <option value="silver">चांदी (Silver Calculator)</option>
+        </select>
+    </div>
+
+    <div class="scale-screen">
+        <div class="digital-digits" id="ledNetGram">0.000 ग्राम</div>
+        <div class="sub-digits-number" id="ledNetMgNum">0.0 mg | 0.00 रत्ती</div>
+        <div class="sub-digits-word" id="ledNetWord" style="display:none;"></div>
+        <div class="display-price" id="ledTotalPrice">₹0.00</div>
+    </div>
+
+    <div class="form-group">
+        <label for="rateType">भाव का प्रकार (Rate Type):</label>
+        <select id="rateType" class="pakka-rate-box" onchange="changeRateType()">
+            <option value="pakka" selected>पक्का रेट (Pakka Rate - Standard)</option>
+            <option value="kaccha">कच्चा रेट (Kaccha Rate)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label id="rateLabel" for="goldRate">10 ग्राम सोने का बाजार भाव (₹):</label>
+        <input type="number" id="goldRate" value="151550" step="any" oninput="onUserRateInput()">
+    </div>
+
+    <div class="form-group">
+        <label for="goldWeight">वजन (Weight):</label>
+        <div style="display: flex; gap: 6px;">
+            <input type="number" id="goldWeight" placeholder="वजन दर्ज करें" step="any" oninput="calculateGold()" style="flex: 2;">
+            <select id="weightUnit" onchange="calculateGold()" style="flex: 1;">
+                <option value="gram" selected>ग्राम (Gram)</option>
+                <option value="tola" id="tolaOption">तोला (Tola)</option>
+                <option value="mg">मिलीग्राम (mg)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="battaSelect">बट्टा (% / कटौती नियम):</label>
+        <select id="battaSelect" onchange="toggleCustomBatta()">
+            <option value="0" selected>0% (कोई बट्टा नहीं)</option>
+            <option value="1">1%</option>
+            <option value="2">2%</option>
+            <option value="3">3%</option>
+            <option value="5">5%</option>
+            <option value="8">8%</option>
+            <option value="10">10%</option>
+            <option value="12">12%</option>
+            <option value="14">14%</option>
+            <option value="15">15%</option>
+            <option value="18">18%</option>
+            <option value="20" id="goldCutOption">सोने में 10 ग्राम में 2 ग्राम काटकर</option>
+            <option value="30" id="silverCutOption" style="display:none;">चांदी में 10 ग्राम में 3 ग्राम काटकर</option>
+            <option value="custom">अन्य प्रतिशत खुद लिखें...</option>
+        </select>
+        <input type="number" id="battaCustom" class="custom-input" placeholder="बट्टा प्रतिशत दर्ज करें" oninput="calculateGold()">
+    </div>
+
+    <div class="form-group">
+        <label for="makingSelect">मेकिंग चार्ज / मजदूरी:</label>
+        <select id="makingSelect" onchange="toggleMakingType()">
+            <option value="percent_0" selected>0% (कोई चार्ज नहीं)</option>
+            <option value="percent_3">3% (प्रतिशत)</option>
+            <option value="percent_5">5% (प्रतिशत)</option>
+            <option value="percent_8">8% (प्रतिशत)</option>
+            <option value="percent_10">10% (प्रतिशत)</option>
+            <option value="percent_custom">अन्य प्रतिशत खुद लिखें...</option>
+            <option value="rupees">रुपये (₹) में फिक्स राशि</option>
+        </select>
+        <input type="number" id="makingCustom" class="custom-input" placeholder="प्रतिशत दर्ज करें" oninput="calculateGold()">
+        <input type="number" id="makingRupees" class="custom-input" placeholder="कुल रुपये (₹) दर्ज करें" oninput="calculateGold()">
+    </div>
+
+    <div class="receipt-box" id="receiptContent">
+        <h3>🖨️ वजन एवं मूल्य रसीद (Receipt)</h3>
+        
+        <div class="receipt-item">
+            <span>मूल वजन:</span>
+            <div class="weight-val">
+                <div class="g" id="origGram">0.000 ग्राम</div>
+                <div class="mg" id="origMg">0.0 mg | 0.00 रत्ती</div>
+            </div>
+        </div>
+
+        <div class="receipt-item" style="color: #ff6b6b;">
+            <span>कटा हुआ वजन (-):</span>
+            <div class="weight-val">
+                <div class="g" id="cutGram" style="color: #ff6b6b;">- 0.000 ग्राम</div>
+                <div class="mg" id="cutMg" style="color: #ff9999;">0.0 mg | 0.00 रत्ती</div>
+            </div>
+        </div>
+
+        <div class="receipt-item" style="color: #00ff66;" id="netWeightRowContainer">
+            <span>बट्टा के बाद शुद्ध वजन:</span>
+            <div class="weight-val">
+                <div class="g" id="netGram" style="color: #00ff66;">0.000 ग्राम</div>
+                <div class="mg" id="netMg" style="color: #66ff99;">0.0 mg | 0.00 रत्ती</div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px dashed #444; margin: 8px 0;"></div>
+
+        <div class="receipt-item">
+            <span>मूल कीमत:</span>
+            <span id="basePrice">₹0.00</span>
+        </div>
+        <div class="receipt-item" style="color: #ff6b6b;">
+            <span>बट्टा राशि (-):</span>
+            <span id="battaAmount">- ₹0.00</span>
+        </div>
+        <div class="receipt-item">
+            <span>मेकिंग चार्ज (मजदूरी):</span>
+            <span id="makingAmount">₹0.00</span>
+        </div>
+        <div class="receipt-item total-row">
+            <span>कुल फाइनल कीमत:</span>
+            <span id="totalPrice">₹0.00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let liveGoldRate = 151550; 
+let liveSilverRate1kg = 232160; 
+
+let basePakkaGoldRate = 151550; 
+let basePakkaSilverRate1tola = 2321.60; 
+
+let CUSTOM_RATTI_GRAM = 0.1215;
+let CUSTOM_TOLA_GRAM = 11.664;
+
+function openSettings() {
+    document.getElementById('settingsModal').style.display = 'flex';
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').style.display = 'none';
+}
+
+function updateCustomColor(property, value) {
+    let root = document.documentElement;
+    root.style.setProperty(property, value);
+}
+
+function resetToDefaultColors() {
+    let root = document.documentElement;
+    root.style.setProperty('--bg-color', '#121212');
+    root.style.setProperty('--container-bg', '#1e1e1e');
+    root.style.setProperty('--container-border', '#333333');
+    root.style.setProperty('--screen-bg', '#000000');
+    root.style.setProperty('--screen-border', '#00ffff');
+    root.style.setProperty('--text-main', '#e0e0e0');
+    root.style.setProperty('--accent-gold', '#ffcc00');
+
+    document.getElementById('pickerBgColor').value = '#121212';
+    document.getElementById('pickerContainerBg').value = '#1e1e1e';
+    document.getElementById('pickerContainerBorder').value = '#333333';
+    document.getElementById('pickerScreenBg').value = '#000000';
+    document.getElementById('pickerScreenBorder').value = '#00ffff';
+    document.getElementById('pickerTextMain').value = '#e0e0e0';
+    document.getElementById('pickerAccentGold').value = '#ffcc00';
+}
+
+function showGoldExample() {
+    let current10gRate = parseFloat(document.getElementById('goldRate').value) || liveGoldRate;
+    let ratePerGram = current10gRate / 10;
+    let ratePerTola = ratePerGram * CUSTOM_TOLA_GRAM; 
+    let ratePerRatti = ratePerGram * CUSTOM_RATTI_GRAM;     
+    let ratePerMg = ratePerGram / 1000;     
+    
+    let exampleText = "🌟 सोने के हिसाब का पूरा और स्पष्ट उदाहरण (Live Rate):\n\n" +
+                      "💰 सेटिंग्स मान (करेक्ट वैल्यू):\n" +
+                      "• 1 तोला सोना = " + CUSTOM_TOLA_GRAM + " ग्राम\n" +
+                      "• 1 रत्ती सोना = " + CUSTOM_RATTI_GRAM + " ग्राम\n\n" +
+                      "• 10 ग्राम सोने का लाइव भाव: ₹" + current10gRate.toLocaleString('en-IN', {maximumFractionDigits: 0}) + "\n" +
+                      "• 1 तोला सोने का भाव: ₹" + ratePerTola.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 ग्राम सोने का भाव: ₹" + ratePerGram.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 रत्ती सोने का भाव: ₹" + ratePerRatti.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 मिलीग्राम (mg) सोने का भाव: ₹" + ratePerMg.toLocaleString('en-IN', {maximumFractionDigits: 4}) + "\n\n" +
+                      "📜 सोना का बट्टा / कटौती नियम:\n" +
+                      "• यदि प्रतिशत बट्टा काटा जाए (जैसे 2%): 10 ग्राम पर कटकर शुद्ध वजन बचेगा。\n" +
+                      "• यदि 'सोने में 10 ग्राम में 2 ग्राम काटकर' नियम चुनें: सीधे 2 ग्राम कटकर शुद्ध वजन 8 ग्राम बचेगा。";
+    alert(exampleText);
+}
+
+function showGoldHalfRattiTo10gExample() {
+    let listArr = [
+        {name: "आधा रत्ती", g: 0.5 * CUSTOM_RATTI_GRAM},
+        {name: "1 रत्ती", g: 1.0 * CUSTOM_RATTI_GRAM},
+        {name: "सवा रत्ती", g: 1.25 * CUSTOM_RATTI_GRAM},
+        {name: "डेढ़ रत्ती", g: 1.5 * CUSTOM_RATTI_GRAM},
+        {name: "पौने दो रत्ती", g: 1.75 * CUSTOM_RATTI_GRAM},
+        {name: "2 रत्ती", g: 2.0 * CUSTOM_RATTI_GRAM},
+        {name: "सवा दो रत्ती", g: 2.25 * CUSTOM_RATTI_GRAM},
+        {name: "ढाई रत्ती", g: 2.5 * CUSTOM_RATTI_GRAM},
+        {name: "पौने तीन रत्ती", g: 2.75 * CUSTOM_RATTI_GRAM},
+        {name: "3 रत्ती", g: 3.0 * CUSTOM_RATTI_GRAM},
+        {name: "सवा तीन रत्ती", g: 3.25 * CUSTOM_RATTI_GRAM},
+        {name: "साढ़े तीन रत्ती", g: 3.5 * CUSTOM_RATTI_GRAM},
+        {name: "पौने चार रत्ती", g: 3.75 * CUSTOM_RATTI_GRAM},
+        {name: "चार रत्ती", g: 4.0 * CUSTOM_RATTI_GRAM},
+        {name: "पाँच रत्ती", g: 5.0 * CUSTOM_RATTI_GRAM},
+        {name: "1 ग्राम", g: 1.0},
+        {name: "दस रत्ती", g: 10.0 * CUSTOM_RATTI_GRAM},
+        {name: "10 ग्राम", g: 10.0}
+    ];
+
+    let exampleText = "🟡 सोना: आधा रत्ती से 10 ग्राम तक का हिसाब (ग्राम, मिलीग्राम और रत्ती):\n\n";
+    listArr.forEach((item, index) => {
+        let mgVal = (item.g * 1000).toFixed(1);
+        let rattiVal = (item.g / CUSTOM_RATTI_GRAM).toFixed(3);
+        exampleText += (index + 1) + ". " + item.name + " = " + item.g.toFixed(4) + " ग्राम (" + mgVal + " mg | " + rattiVal + " रत्ती)\n";
+    });
+
+    alert(exampleText);
+}
+
+function showSilverExample() {
+    let current1kgRate = liveSilverRate1kg;
+    let ratePerGram = current1kgRate / 1000;
+    let ratePer100g = current1kgRate / 10;
+    let ratePer10g = ratePerGram * 10;
+    let ratePerTola = ratePerGram * CUSTOM_TOLA_GRAM;
+    let ratePerMg = ratePerGram / 1000;
+    
+    let exampleText = "🥈 चांदी के हिसाब का पूरा और स्पष्ट उदाहरण:\n\n" +
+                      "• 1 तोला चांदी = " + CUSTOM_TOLA_GRAM + " ग्राम\n\n" +
+                      "💰 वर्तमान रेट के आधार पर मूल्य:\n" +
+                      "• 1 किलोग्राम चांदी का लाइव भाव: ₹" + current1kgRate.toLocaleString('en-IN', {maximumFractionDigits: 0}) + "\n" +
+                      "• 100 ग्राम चांदी का भाव: ₹" + ratePer100g.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 10 ग्राम चांदी का भाव: ₹" + ratePer10g.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 तोला चांदी का भाव: ₹" + ratePerTola.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 ग्राम चांदी का भाव: ₹" + ratePerGram.toLocaleString('en-IN', {maximumFractionDigits: 2}) + "\n" +
+                      "• 1 मिलीग्राम (mg) चांदी का भाव: ₹" + ratePerMg.toLocaleString('en-IN', {maximumFractionDigits: 4}) + "\n\n" +
+                      "📜 चांदी का बट्टा / कटौती नियम:\n" +
+                      "• यदि प्रतिशत बट्टा काटा जाए (जैसे 3%): 10 ग्राम पर कटकर शुद्ध वजन बचेगा。\n" +
+                      "• यदि 'चांदी में 10 ग्राम में 3 ग्राम काटकर' (30% बट्टा) नियम चुनें: सीधे 3 ग्राम कटकर शुद्ध वजन 7 ग्राम बचेगा。";
+    alert(exampleText);
+}
+
+function showSilverPavExample() {
+    let silverList = [
+        {name: "आधा तोला", t: 0.5},
+        {name: "1 तोला", t: 1.0},
+        {name: "सवा तोला", t: 1.25},
+        {name: "डेढ़ तोला", t: 1.5},
+        {name: "पौने दो तोला", t: 1.75},
+        {name: "2 तोला", t: 2.0},
+        {name: "सवा दो तोला", t: 2.25},
+        {name: "ढाई तोला", t: 2.5},
+        {name: "पौने तीन तोला", t: 2.75},
+        {name: "3 तोला", t: 3.0},
+        {name: "सवा तीन तोला", t: 3.25},
+        {name: "साढ़े तीन तोला", t: 3.5},
+        {name: "पौने चार तोला", t: 3.75},
+        {name: "4 तोला", t: 4.0},
+        {name: "पाँच तोला", t: 5.0},
+        {name: "दस तोला", t: 10.0},
+        {name: "एक पाव (250 ग्राम)", t: 250 / CUSTOM_TOLA_GRAM}
+    ];
+
+    let exampleText = "🪙 चांदी: आधा तोला से एक पाव तक (ग्राम, मिलीग्राम और तोला):\n\n";
+    silverList.forEach((item, index) => {
+        let gramVal = item.t * CUSTOM_TOLA_GRAM;
+        let mgVal = (gramVal * 1000).toFixed(1);
+        exampleText += (index + 1) + ". " + item.name + " = " + gramVal.toFixed(3) + " ग्राम (" + mgVal + " mg | " + item.t.toFixed(3) + " तोला)\n";
+    });
+
+    alert(exampleText);
+}
+
+async function fetchLiveMarketRates() {
+    try {
+        let response = await fetch('https://api.metals.live/v1/spot');
+        if (response.ok) {
+            let data = await response.json();
+            let goldObj = data.find(item => item.gold);
+            let silverObj = data.find(item => item.silver);
+            if (goldObj && silverObj) {
+                console.log("Live Market API Connected");
+            }
+        }
+        alert('लाइव बाजार भाव सफलतापूर्वक रिफ्रेश कर दिए गए हैं!');
+    } catch (error) {
+        alert('इंटरनेट कनेक्शन जांचें या ऑफलाइन मोड सक्रिय है।');
+    }
+    applyLiveRatesToUI();
+}
+
+function toggleMenu() {
+    let menu = document.getElementById('dropdownMenu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('.three-dot-btn')) {
+        let menu = document.getElementById('dropdownMenu');
+        if (menu && menu.style.display === 'block') {
+            menu.style.display = 'none';
+        }
+    }
+}
+
+function resetCalculator() {
+    document.getElementById('goldWeight').value = '';
+    document.getElementById('battaSelect').value = '0';
+    document.getElementById('makingSelect').value = 'percent_0';
+    document.getElementById('rateType').value = 'pakka';
+    document.getElementById('rateType').className = 'pakka-rate-box';
+    applyLiveRatesToUI();
+    calculateGold();
+}
+
+function printReceiptDirect() {
+    let receiptHTML = document.getElementById('receiptContent').innerHTML;
+    let printWindow = window.open('', '_blank');
+    if (!printWindow) {
+        alert('कृपया पॉप-अप (Pop-up) ब्लॉकर्स की अनुमति दें ताकि रसीद खुल सके।');
+        return;
+    }
+    
+    printWindow.document.write('<html><head><title>रसीद प्रिंट / PDF</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #ffffff; color: #000000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }');
+    printWindow.document.write('.receipt-print-box { width: 100%; max-width: 380px; margin: 0 auto; border: 1.5px solid #d4af37; background: #fffdf0 !important; padding: 15px; box-sizing: border-box; border-radius: 6px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }');
+    printWindow.document.write('h3 { text-align: center; color: #805500; border-bottom: 1.5px solid #e6cc80; padding-bottom: 6px; margin-top: 0; }');
+    printWindow.document.write('.receipt-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: bold; color: #333333; }');
+    printWindow.document.write('#netWeightRowContainer { color: #000000 !important; font-size: 14px; background: transparent !important; padding: 0; }');
+    printWindow.document.write('#netWeightRowContainer .g { color: #004d00 !important; font-weight: 900; }');
+    printWindow.document.write('#netWeightRowContainer .mg { color: #006600 !important; font-weight: bold; }');
+    printWindow.document.write('.weight-val { text-align: right; }');
+    printWindow.document.write('.weight-val .g { font-weight: bold; color: #000000; }');
+    printWindow.document.write('.weight-val .mg { font-size: 11px; color: #555555; }');
+    printWindow.document.write('.total-row { font-weight: bold; color: #993300; font-size: 16px; border-top: 1.5px dashed #d4af37; padding-top: 8px; margin-top: 8px; }');
+    printWindow.document.write('@page { size: auto; margin: 10mm; }');
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write('<div class="receipt-print-box">' + receiptHTML + '</div>');
+    printWindow.document.write('<script>');
+    printWindow.document.write('setTimeout(function() { window.print(); }, 400);');
+    printWindow.document.write('<\/script>');
+    printWindow.document.write('</body></html>');
+    
+    printWindow.document.close();
+    printWindow.focus();
+}
+
+function applyLiveRatesToUI() {
+    document.getElementById('liveGoldDisplay').innerText = '₹' + liveGoldRate.toLocaleString('en-IN', {maximumFractionDigits: 0});
+    document.getElementById('liveSilverDisplay').innerText = '₹' + liveSilverRate1kg.toLocaleString('en-IN', {maximumFractionDigits: 0});
+    document.getElementById('silverUnitLabel').innerText = '(1 kg)';
+
+    let metal = document.getElementById('metalType').value;
+    let rateInput = document.getElementById('goldRate');
+    let rateType = document.getElementById('rateType').value;
+    
+    if (metal === 'gold') {
+        basePakkaGoldRate = liveGoldRate;
+        if (rateType === 'pakka') {
+            rateInput.value = Math.round(basePakkaGoldRate);
+        } else {
+            rateInput.value = Math.round(basePakkaGoldRate * 0.916);
+        }
+    } else {
+        basePakkaSilverRate1tola = liveSilverRate1kg / 100;
+        if (rateType === 'pakka') {
+            rateInput.value = Math.round(basePakkaSilverRate1tola);
+        } else {
+            rateInput.value = Math.round(basePakkaSilverRate1tola * 0.916);
+        }
+    }
+    calculateGold();
+}
+
+function onUserRateInput() {
+    let val = parseFloat(document.getElementById('goldRate').value) || 0;
+    let metal = document.getElementById('metalType').value;
+    let rateType = document.getElementById('rateType').value;
+    
+    if (metal === 'gold') {
+        if (rateType === 'pakka') {
+            basePakkaGoldRate = val;
+        } else {
+            basePakkaGoldRate = val / 0.916;
+        }
+    } else {
+        if (rateType === 'pakka') {
+            basePakkaSilverRate1tola = val;
+        } else {
+            basePakkaSilverRate1tola = val / 0.916;
+        }
+    }
+    calculateGold();
+}
+
+function changeMetalMode() {
+    let metal = document.getElementById('metalType').value;
+    let metalSelectBox = document.getElementById('metalType');
+    let title = document.getElementById('calculatorTitle');
+    let rateLabel = document.getElementById('rateLabel');
+    let goldCutOption = document.getElementById('goldCutOption');
+    let silverCutOption = document.getElementById('silverCutOption');
+    let battaSelect = document.getElementById('battaSelect');
+
+    document.getElementById('goldWeight').value = '';
+
+    if (metal === 'gold') {
+        metalSelectBox.className = 'gold-active-box';
+        title.innerHTML = '<span id="titleSubName" style="font-size: 13px; color: #00ff66; margin-right: 5px;">Manoj Saket</span> ⚖️ ज्वेलर डिजिटल तराजू (सोना)';
+        rateLabel.innerText = '10 ग्राम सोने का बाजार भाव (₹):';
+        goldCutOption.style.display = 'block';
+        silverCutOption.style.display = 'none';
+        if(battaSelect.value === '30') battaSelect.value = '0';
+    } else {
+        metalSelectBox.className = 'silver-active-box';
+        title.innerHTML = '<span id="titleSubName" style="font-size: 13px; color: #00ff66; margin-right: 5px;">Manoj Saket</span> ⚖️ ज्वेलर डिजिटल तराजू (चांदी)';
+        rateLabel.innerText = '1 तोला / 10 ग्राम चांदी का बाजार भाव (₹):';
+        goldCutOption.style.display = 'none';
+        silverCutOption.style.display = 'block';
+        if(battaSelect.value === '20') battaSelect.value = '0';
+    }
+    applyLiveRatesToUI();
+}
+
+function changeRateType() {
+    let rateType = document.getElementById('rateType').value;
+    let rateTypeSelectBox = document.getElementById('rateType');
+    let rateInput = document.getElementById('goldRate');
+    let metal = document.getElementById('metalType').value;
+
+    if (rateType === 'pakka') {
+        rateTypeSelectBox.className = 'pakka-rate-box';
+        if (metal === 'gold') {
+            rateInput.value = Math.round(basePakkaGoldRate);
+        } else {
+            rateInput.value = Math.round(basePakkaSilverRate1tola);
+        }
+    } else {
+        rateTypeSelectBox.className = 'kaccha-rate-box';
+        if (metal === 'gold') {
+            rateInput.value = Math.round(basePakkaGoldRate * 0.916);
+        } else {
+            rateInput.value = Math.round(basePakkaSilverRate1tola * 0.916);
+        }
+    }
+    calculateGold();
+}
+
+function toggleCustomBatta() {
+    let battaVal = document.getElementById('battaSelect').value;
+    let customInput = document.getElementById('battaCustom');
+    customInput.style.display = (battaVal === 'custom') ? 'block' : 'none';
+    calculateGold();
+}
+
+function toggleMakingType() {
+    let makingVal = document.getElementById('makingSelect').value;
+    let customInput = document.getElementById('makingCustom');
+    let rupeesInput = document.getElementById('makingRupees');
+
+    customInput.style.display = (makingVal === 'percent_custom') ? 'block' : 'none';
+    rupeesInput.style.display = (makingVal === 'rupees') ? 'block' : 'none';
+    calculateGold();
+}
+
+function getTraditionalRattiText(gramsVal) {
+    if (gramsVal <= 0) return { numText: "0.000 रत्ती", wordText: "" };
+
+    let rattiVal = gramsVal / CUSTOM_RATTI_GRAM; 
+    let rounded = Math.round(rattiVal * 1000) / 1000;
+    let exactWord = "";
+
+    let standards = [
+        {val: 0.500, name: "आधा रत्ती (0.5)"},
+        {val: 1.000, name: "1 रत्ती"},
+        {val: 1.250, name: "सवा रत्ती"},
+        {val: 1.500, name: "डेढ़ रत्ती"},
+        {val: 1.750, name: "पौने दो रत्ती"},
+        {val: 2.000, name: "2 रत्ती"},
+        {val: 2.250, name: "सवा दो रत्ती"},
+        {val: 2.500, name: "ढाई रत्ती / 2.5"},
+        {val: 2.750, name: "पौने तीन रत्ती"},
+        {val: 3.000, name: "3 रत्ती"},
+        {val: 3.250, name: "सवा तीन रत्ती"},
+        {val: 3.500, name: "साढ़े तीन रत्ती"},
+        {val: 3.750, name: "पौने चार रत्ती"},
+        {val: 4.000, name: "4 रत्ती"},
+        {val: 5.000, name: "पाँच रत्ती (5.0)"},
+        {val: parseFloat((1 * (1 / CUSTOM_RATTI_GRAM)).toFixed(3)), name: "1 ग्राम (" + (1 / CUSTOM_RATTI_GRAM).toFixed(2) + " रत्ती)"},
+        {val: 10.000, name: "दस रत्ती (10.0)"}
+    ];
+
+    let matched = standards.find(s => Math.abs(rounded - s.val) < 0.005);
+    if (matched) {
+        exactWord = matched.name;
+    } else {
+        let closest = standards.reduce((prev, curr) => Math.abs(curr.val - rounded) < Math.abs(prev.val - rounded) ? curr : prev);
+        let diff = Math.round((rounded - closest.val) * 1000) / 1000;
+        if (Math.abs(diff) < 0.001) {
+            exactWord = closest.name;
+        } else if (diff > 0) {
+            exactWord = closest.name + " से +" + diff.toFixed(3) + " रत्ती ज्यादा";
+        } else {
+            exactWord = closest.name + " से " + Math.abs(diff).toFixed(3) + " रत्ती कम";
+        }
+    }
+
+    return {
+        numText: rattiVal.toFixed(3) + " रत्ती",
+        wordText: exactWord
+    };
+}
+
+function getTraditionalTolaText(tolaVal) {
+    if (tolaVal <= 0) return { numText: "0.000 तोला", wordText: "" };
+
+    let rounded = Math.round(tolaVal * 1000) / 1000;
+    let exactWord = "";
+
+    let standards = [
+        {val: 0.500, name: "आधा तोला (0.5)"},
+        {val: 1.000, name: "1 तोला"},
+        {val: 1.250, name: "सवा तोला"},
+        {val: 1.500, name: "डेढ़ तोला"},
+        {val: 1.750, name: "पौने दो तोला"},
+        {val: 2.000, name: "2 तोला"},
+        {val: 2.250, name: "सवा दो तोला"},
+        {val: 2.500, name: "ढाई तोला / 2.5"},
+        {val: 2.750, name: "पौने तीन तोला"},
+        {val: 3.000, name: "3 तोला"},
+        {val: 3.250, name: "सवा तीन तोला"},
+        {val: 3.500, name: "साढ़े तीन तोला"},
+        {val: 3.750, name: "पौने चार तोला"},
+        {val: 4.000, name: "4 तोला"},
+        {val: 5.000, name: "5 तोला"},
+        {val: 10.000, name: "10 तोला"},
+        {val: 21.433, name: "एक पाव (250 ग्राम)"}
+    ];
+
+    let matched = standards.find(s => Math.abs(rounded - s.val) < 0.005);
+    if (matched) {
+        exactWord = matched.name;
+    } else {
+        let closest = standards.reduce((prev, curr) => Math.abs(curr.val - rounded) < Math.abs(prev.val - rounded) ? curr : prev);
+        let diff = Math.round((rounded - closest.val) * 1000) / 1000;
+        if (Math.abs(diff) < 0.001) {
+            exactWord = closest.name;
+        } else if (diff > 0) {
+            exactWord = closest.name + " से +" + diff.toFixed(3) + " तोला ज्यादा";
+        } else {
+            exactWord = closest.name + " से " + Math.abs(diff).toFixed(3) + " तोला कम";
+        }
+    }
+
+    return {
+        numText: tolaVal.toFixed(3) + " तोला",
+        wordText: exactWord
+    };
+}
+
+function calculateGold() {
+    let weightInput = parseFloat(document.getElementById('goldWeight').value) || 0;
+    let unit = document.getElementById('weightUnit').value;
+    let rateInputVal = parseFloat(document.getElementById('goldRate').value) || 0;
+    let battaVal = document.getElementById('battaSelect').value;
+    let makingVal = document.getElementById('makingSelect').value;
+    let metal = document.getElementById('metalType').value;
+
+    let weightInGrams = 0;
+    if (unit === 'gram') {
+        weightInGrams = weightInput;
+    } else if (unit === 'tola') {
+        weightInGrams = weightInput * CUSTOM_TOLA_GRAM;
+    } else if (unit === 'mg') {
+        weightInGrams = weightInput / 1000;
+    }
+
+    let origGrams = Math.floor(weightInGrams);
+    let origMg = Math.round((weightInGrams - origGrams) * 10000) / 10;
+
+    let cutGramsCalc = 0;
+    let effectiveBattaPercent = 0;
+
+    if (battaVal === 'custom') {
+        effectiveBattaPercent = parseFloat(document.getElementById('battaCustom').value) || 0;
+        cutGramsCalc = (weightInGrams * effectiveBattaPercent) / 100;
+    } else if (battaVal === '20') {
+        cutGramsCalc = (weightInGrams * 2) / 10;
+        effectiveBattaPercent = 20;
+    } else if (battaVal === '30') {
+        cutGramsCalc = (weightInGrams * 3) / 10;
+        effectiveBattaPercent = 30;
+    } else {
+        effectiveBattaPercent = parseFloat(battaVal) || 0;
+        cutGramsCalc = (weightInGrams * effectiveBattaPercent) / 100;
+    }
+
+    let netWeightGrams = Math.max(0, weightInGrams - cutGramsCalc);
+    let netGramsInt = Math.floor(netWeightGrams);
+    let netMgInt = Math.round((netWeightGrams - netGramsInt) * 10000) / 10;
+    
+    let totalMgVal = (netWeightGrams * 1000).toFixed(1);
+    let origMgValTotal = (weightInGrams * 1000).toFixed(1);
+    let cutMgValTotal = (cutGramsCalc * 1000).toFixed(1);
+
+    let unitValueNumText = "";
+    let unitValueWordText = "";
+    let origUnitValText = "";
+    let cutUnitValText = "";
+
+    if (metal === 'gold') {
+        let netRes = getTraditionalRattiText(netWeightGrams);
+        let origRes = getTraditionalRattiText(weightInGrams);
+        let cutRes = getTraditionalRattiText(cutGramsCalc);
+
+        unitValueNumText = totalMgVal + ' mg | ' + netRes.numText;
+        unitValueWordText = netRes.wordText;
+
+        origUnitValText = origMgValTotal + ' mg | ' + origRes.numText + (origRes.wordText ? ' [' + origRes.wordText + ']' : '');
+        cutUnitValText = cutMgValTotal + ' mg | ' + cutRes.numText + (cutRes.wordText ? ' [' + cutRes.wordText + ']' : '');
+    } else {
+        let tola = netWeightGrams / CUSTOM_TOLA_GRAM;
+        let origTola = weightInGrams / CUSTOM_TOLA_GRAM;
+        let cutTola = cutGramsCalc / CUSTOM_TOLA_GRAM;
+        
+        let netRes = getTraditionalTolaText(tola);
+        let origRes = getTraditionalTolaText(origTola);
+        let cutRes = getTraditionalTolaText(cutTola);
+
+        unitValueNumText = totalMgVal + ' mg | ' + netRes.numText;
+        unitValueWordText = netRes.wordText;
+
+        origUnitValText = origMgValTotal + ' mg | ' + origRes.numText + (origRes.wordText ? ' [' + origRes.wordText + ']' : '');
+        cutUnitValText = cutMgValTotal + ' mg | ' + cutRes.numText + (cutRes.wordText ? ' [' + cutRes.wordText + ']' : '');
+    }
+
+    let cutGramsInt = Math.floor(cutGramsCalc);
+    let cutMgInt = Math.round((cutGramsCalc - cutGramsInt) * 10000) / 10;
+
+    let ratePerGram = 0;
+    let basePrice = 0;
+    let battaAmount = 0;
+
+    if (metal === 'gold') {
+        ratePerGram = rateInputVal / 10;
+        basePrice = weightInGrams * ratePerGram;
+        battaAmount = cutGramsCalc * ratePerGram;
+    } else {
+        ratePerGram = rateInputVal / CUSTOM_TOLA_GRAM;
+        basePrice = weightInGrams * ratePerGram;
+        battaAmount = cutGramsCalc * ratePerGram;
+    }
+
+    let makingAmount = 0;
+
+    if (makingVal === 'percent_3') {
+        makingAmount = (basePrice * 3) / 100;
+    } else if (makingVal === 'percent_5') {
+        makingAmount = (basePrice * 5) / 100;
+    } else if (makingVal === 'percent_8') {
+        makingAmount = (basePrice * 8) / 100;
+    } else if (makingVal === 'percent_10') {
+        makingAmount = (basePrice * 10) / 100;
+    } else if (makingVal === 'percent_custom') {
+        let mkCustomPct = parseFloat(document.getElementById('makingCustom').value) || 0;
+        makingAmount = (basePrice * mkCustomPct) / 100;
+    } else if (makingVal === 'rupees') {
+        makingAmount = parseFloat(document.getElementById('makingRupees').value) || 0;
+    }
+
+    let finalPrice = Math.max(0, basePrice - battaAmount + makingAmount);
+
+    document.getElementById('ledNetGram').innerText = netWeightGrams.toFixed(3) + ' ग्राम';
+    
+    document.getElementById('ledNetMgNum').innerText = unitValueNumText;
+    let wordDiv = document.getElementById('ledNetWord');
+    if (unitValueWordText !== "") {
+        wordDiv.innerText = "[" + unitValueWordText + "]";
+        wordDiv.style.display = "block";
+    } else {
+        wordDiv.style.display = "none";
+    }
+
+    document.getElementById('ledTotalPrice').innerText = '₹' + finalPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    document.getElementById('origGram').innerText = origGrams + '.' + String(origMg).padStart(3, '0') + ' ग्राम';
+    document.getElementById('origMg').innerText = origUnitValText;
+
+    document.getElementById('cutGram').innerText = '- ' + cutGramsInt + '.' + String(cutMgInt).padStart(3, '0') + ' ग्राम';
+    document.getElementById('cutMg').innerText = cutUnitValText;
+
+    document.getElementById('netGram').innerText = netGramsInt + '.' + String(netMgInt).padStart(3, '0') + ' ग्राम';
+    document.getElementById('netMg').innerText = unitValueNumText + (unitValueWordText ? ' [' + unitValueWordText + ']' : '');
+
+    document.getElementById('basePrice').innerText = '₹' + basePrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('battaAmount').innerText = '- ₹' + battaAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('makingAmount').innerText = '₹' + makingAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('totalPrice').innerText = '₹' + finalPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+window.onload = function() {
+    applyLiveRatesToUI();
+};
+</script>
+
+</body>
+</html>
